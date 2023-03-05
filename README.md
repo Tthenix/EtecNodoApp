@@ -3,6 +3,14 @@
 
 Mern = MongoDB + Express + ReactJS + NodeJS
 
+- "cors": "^2.8.5"
+- "dotenv": "^16.0.3"
+- "express": "^4.18.2"
+- "mongoose": "^7.0.0"
+
+-[MongoDB 6.0.4](https://www.mongodb.com/try/download/community)
+-[Insomia](https://insomnia.rest/download) 
+
 # Versiones
 
 Node: v18.12.1
