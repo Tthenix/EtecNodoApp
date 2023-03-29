@@ -7,14 +7,14 @@ const ListaUsuario = () => {
 
   useEffect(() =>{
     const getLista = async() =>{
-      const res = await axios.get("http://localhost:3000/api/cursos")
+      const res = await axios.get("http://localhost:3001/api/cursos")
       setLista(res.data)
     }
     getLista();
   },[lista])
 
   const eliminarCurso = async(id)=>{
-    await axios.delete("http://localhost:3000/api/cursos/" + id)
+    await axios.delete("http://localhost:3001/api/cursos/" + id)
   }
 
   return (

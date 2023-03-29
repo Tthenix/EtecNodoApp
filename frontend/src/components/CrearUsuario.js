@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 import axios from "axios"
+import Swal from 'sweetalert2'
+import { useNavigate } from "react-router-dom";
+
+
 const CrearUsuario = () => {
+
+  const navigate = useNavigate();
 
   //   nombre: String,
   //   profesor: String,
@@ -36,10 +42,21 @@ const CrearUsuario = () => {
         horaEntrega:usuario.horaEntrega,
       }
 
-      await axios.post('http://localhost:3000/api/cursos', newUser)
+      await axios.post('http://localhost:3001/api/cursos', newUser)
 
       setUsuario({...ValorInicial})
   }
+
+  const alert = () => {
+    Swal.fire({
+      title: 'Do you want to save the changes?',
+      confirmButtonText: 'Save',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        navigate({ pathname: '/' });
+      }
+    })
+}
 
   return (
     <div className="col-md-6 offset-md-3">
@@ -116,8 +133,7 @@ const CrearUsuario = () => {
               onChange={capturarDatos}
             />
           </div> */}
-
-          <button className="btn btn-primary form-control">Guardar usuario</button>
+          <button className="btn btn-primary form-control" onClick={alert}>Guardar usuario</button>
         </form>
       </div>
     </div>

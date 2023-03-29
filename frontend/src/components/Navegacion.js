@@ -6,8 +6,8 @@ const Navegacion = () => {
     <div>
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
         <div className="container">
-          <Link className="navbar-brand" to="/">
-            Usuario
+          <Link className="navbar-brand " to="/" >
+            NodoApp
           </Link>
           <button
             className="navbar-toggler"
