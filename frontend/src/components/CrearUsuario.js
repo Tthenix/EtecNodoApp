@@ -2,12 +2,18 @@ import React, { useState } from "react";
 import axios from "axios"
 const CrearUsuario = () => {
 
+  //   nombre: String,
+  //   profesor: String,
+  //   horaRetirada: Date,
+  //   cantidad: Number,
+  //   horaEntrega: Date
+
   const ValorInicial ={
     nombre: "",
-    apellido: "",
-    edad: 18,
-    telefono:0,
-    correo:""
+    profesor: "",
+    horaRetirada: 18,
+    cantidad:0,
+    horaEntrega:""
   }
 
   const [usuario, setUsuario] = useState(ValorInicial)
@@ -24,10 +30,10 @@ const CrearUsuario = () => {
       //logiaca peticion post
       const newUser = {
         nombre:usuario.nombre,
-        apellido:usuario.apellido,
-        edad:usuario.edad,
-        telefono:usuario.telefono,
-        correo:usuario.correo,
+        profesor:usuario.profesor,
+        cantidad:usuario.cantidad,
+        horaRetirada:usuario.horaRetirada,
+        horaEntrega:usuario.horaEntrega,
       }
 
       await axios.post('http://localhost:3000/api/cursos', newUser)
@@ -56,60 +62,60 @@ const CrearUsuario = () => {
           </div>
 
           <div className="mb-3">
-            <label>Apellido:</label>
+            <label>Profesor:</label>
 
             <input
               type="text"
               className="form-control"
-              placeholder="ingresar el apellido del usuario"
+              placeholder="ingresar nombre del profesor"
               required
-              name="apellido"
-              value={usuario.apellido}
+              name="profesor"
+              value={usuario.profesor}
               onChange={capturarDatos}
             />
           </div>
 
           <div className="mb-3">
-            <label>Edad:</label>
+            <label>cantidad:</label>
 
             <input
               type="number"
               className="form-control"
-              placeholder="ingresar la edad del usuario"
+              placeholder="ingresar cantidad de computadoras retiradas"
               required
-              name="edad"
-              value={usuario.edad}
+              name="cantidad"
+              value={usuario.cantidad}
               onChange={capturarDatos}
             />
           </div>
 
-          <div className="mb-3">
-            <label>telefono:</label>
+          {/* <div className="mb-3">
+            <label>horaRetirada:</label>
 
             <input
               type="number"
               className="form-control"
-              placeholder="ingresar el telefono del usuario"
+              placeholder="ingresar hora de retirada"
               required
-              name="telefono"
-              value={usuario.telefono}
+              name="horaRetirada"
+              value={usuario.horaRetirada}
               onChange={capturarDatos}
             />
           </div>
 
           <div className="mb-3">
-            <label>correo:</label>
+            <label>horaEntrega:</label>
 
             <input
-              type="text"
+              type="number"
               className="form-control"
-              placeholder="ingresar el correo del usuario"
+              placeholder="hora de entrega"
               required
-              name="correo"
-              value={usuario.correo}
+              name="horaEntrega"
+              value={usuario.horaEntrega}
               onChange={capturarDatos}
             />
-          </div>
+          </div> */}
 
           <button className="btn btn-primary form-control">Guardar usuario</button>
         </form>
