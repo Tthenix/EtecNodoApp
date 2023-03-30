@@ -5,7 +5,8 @@ const cursoSchema = new Schema({
     profesor: String,
     horaRetirada: Date,
     cantidad: Number,
-    horaEntrega: Date
+    horaEntrega: Date,
+    codigo:String,
 },
 {
     timestamps: true

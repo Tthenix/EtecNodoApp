@@ -1,7 +1,32 @@
+body{
+    margin: 0;
+    min-height: 100vh;
+    position: relative;
+    padding-bottom: 6em;
+}
+
+footer{
+    width: 100%;
+    margin-top: auto;
+    position: absolute;
+    justify-content: center;
+    bottom: 0;
+}
+
 .Github {
     padding: 20px;
    
 }
 .Linkedin{
     padding: 20px;
+}
+
+.listas{
+    display:flex ;
+    flex-wrap: wrap;
+    width: 300px;
+}
+
+.Crear{
+    align-items: center;
 }

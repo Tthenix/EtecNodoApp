@@ -4,9 +4,9 @@ import { Link } from "react-router-dom";
 const Navegacion = () => {
   return (
     <div>
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+      <nav className="navbar navbar-expand-lg navbar-dark bg-dark ">
         <div className="container">
-          <Link className="navbar-brand " to="/" >
+          <Link className="navbar-brand" to="/">
             NodoApp
           </Link>
           <button
@@ -20,20 +20,22 @@ const Navegacion = () => {
           >
             <span className="navbar-toggler-icon"></span>
           </button>
-          <div className="collapse navbar-collapse" id="navbarNav">
+
+          <div className="collapse navbar-collapse " id="navbarNav">
             <ul className="navbar-nav ms-auto">
               <li className="nav-item">
-                <Link className="nav-link" to="/">
-                  Lista Usuario
+                <Link className="nav-link p-4 text-white" to="/">
+                  Dashboard
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/CrearUsuario">
-                  Crear usuario
+                <Link className="nav-link p-4 text-white" to="/CrearUsuario">
+                  Retiro de computadora
                 </Link>
               </li>
             </ul>
           </div>
+          
         </div>
       </nav>
     </div>

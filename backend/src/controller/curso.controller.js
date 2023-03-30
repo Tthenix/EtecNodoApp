@@ -8,8 +8,8 @@ cursoCtrl.getCurso = async(req, res) => {
 }
 
 cursoCtrl.createCurso = async(req, res) => {
-    const { nombre, profesor, horaRetirada, cantidad, horaEntrega } = req.body
-    const newCurso = new Curso({nombre, profesor, horaRetirada, cantidad, horaEntrega});
+    const { nombre, profesor, horaRetirada, cantidad, horaEntrega, codigo } = req.body
+    const newCurso = new Curso({nombre, profesor, horaRetirada, cantidad, horaEntrega, codigo});
     await newCurso.save();
     res.json({message: "el curso ha sido añadido"})
 }
@@ -31,7 +31,8 @@ cursoCtrl.updateCurso = async(req, res) => {
         profesor,
         horaRetirada,
         cantidad,
-        horaEntrega
+        horaEntrega,
+        codigo,
     })
     res.json({message: "El curso fue actualizado"})
 }
