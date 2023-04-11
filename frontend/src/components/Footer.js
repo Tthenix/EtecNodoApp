@@ -7,8 +7,8 @@ const Footer = () => (
   <footer className="footer">
     <div className="contrast-footer footer-shadow-dark text-center text-white bg-dark ">
       <div className="container d-flex flex-column">
-        <div class="container">
-          <div class="row">
+        <div className="container">
+          <div className="row">
             <div className="row-md-auto fs-4">Hecho por:</div>
             <div className="col">
 

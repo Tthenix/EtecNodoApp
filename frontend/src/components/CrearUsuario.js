@@ -2,9 +2,17 @@ import React, { useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import { usePcContext } from "./Context";
 
 const CrearUsuario = () => {
+
+  const {guardarPC} = usePcContext()
   const navigate = useNavigate();
+  
+  const pushPC = () => {
+    guardarPC(usuario.cantidad)
+    alert()
+  }
 
   //   nombre: String,
   //   profesor: String,
@@ -44,7 +52,8 @@ const CrearUsuario = () => {
 
     await axios.post("http://localhost:3001/api/cursos", newUser);
 
-    setUsuario({ ...ValorInicial });
+    setUsuario({ ...ValorInicial});
+    
   };
 
   const alert = () => {
@@ -55,6 +64,7 @@ const CrearUsuario = () => {
       if (result.isConfirmed) {
         navigate({ pathname: "/" });
       }
+
     });
   };
 
@@ -109,8 +119,7 @@ const CrearUsuario = () => {
             <div className="mb-3">
               <label>Codigo de computadora:</label>
 
-              <input
-                type="text"
+              <textarea
                 className="form-control"
                 placeholder="ingresar codigo de computadora"
                 required
@@ -119,7 +128,7 @@ const CrearUsuario = () => {
                 onChange={capturarDatos}
               />
             </div>
-            <button className="btn btn-primary form-control" onClick={alert}>
+            <button className="btn btn-primary form-control" onClick={pushPC}>
               Guardar retiro
             </button>
           </form>

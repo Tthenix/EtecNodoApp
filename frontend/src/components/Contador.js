@@ -12,11 +12,8 @@ const Contador = () => {
     const [count, setCount] = useState(120);
 
     return(
-    <div>
+      <div>
         <p>Tenes {count} computadoras</p>
-        <button onClick={() => setCount(count + 1)}>
-          Click me
-        </button>
       </div>
     )
 }

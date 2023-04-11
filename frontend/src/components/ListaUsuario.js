@@ -9,9 +9,13 @@ const ListaUsuario = () => {
     const getLista = async () => {
       const res = await axios.get("http://localhost:3001/api/cursos");
       setLista(res.data);
+      
     };
     getLista();
+    
   }, [lista]);
+
+  
 
   const eliminarCurso = async (id) => {
     await axios.delete("http://localhost:3001/api/cursos/" + id);
@@ -24,8 +28,8 @@ const ListaUsuario = () => {
 
   return (
     <div className="row">
-      <div class="row">
-        <div class="col-md-10">
+      <div className="row">
+        <div className="col-md-10">
           {lista.map((cursos) => (
             <div className="col md-4 p-2" key={cursos._id}>
               <div className="card listas shadow">
@@ -53,7 +57,7 @@ const ListaUsuario = () => {
             </div>
           ))}
         </div>
-        <div class="col-6 col-md-2"> 
+        <div className="col-6 col-md-2"> 
    
         <Contador onAdd={onAdd} initial={1} stock={120} />
         </div>
