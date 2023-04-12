@@ -20,13 +20,17 @@ const PcProvider = ({children}) => {
 
     const [stock, setStock] = useState(120)
 
-    const guardarPC = (n) => {
-        setStock(120 - n)
-        console.log(stock);
+    const updateStock = (newStock) => {
+        setStock(newStock);
+    }
+
+    const findIdStock = (data, id) => {
+        const listaEncontrada = data.find(element => element._id === id);
+        setStock(stock + listaEncontrada.cantidad)
     }
 
     return(
-        <pcContext.Provider value={{guardarPC, stock}}>
+        <pcContext.Provider value={{stock, updateStock, findIdStock}}>
             {children}
         </pcContext.Provider>
     )

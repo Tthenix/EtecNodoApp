@@ -1,9 +1,11 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Contador from "./Contador";
+import { usePcContext } from "./Context";
 
 const ListaUsuario = () => {
   const [lista, setLista] = useState([]);
+  const { findIdStock } = usePcContext();
 
   useEffect(() => {
     const getLista = async () => {
@@ -18,6 +20,7 @@ const ListaUsuario = () => {
   
 
   const eliminarCurso = async (id) => {
+    findIdStock(lista, id)
     await axios.delete("http://localhost:3001/api/cursos/" + id);
   };
 

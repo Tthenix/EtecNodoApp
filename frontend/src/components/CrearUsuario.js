@@ -5,14 +5,12 @@ import { useNavigate } from "react-router-dom";
 import { usePcContext } from "./Context";
 
 const CrearUsuario = () => {
-
-  const {guardarPC} = usePcContext()
-  const navigate = useNavigate();
   
-  const pushPC = () => {
-    guardarPC(usuario.cantidad)
-    alert()
-  }
+  const navigate = useNavigate();
+  const { updateStock, stock } = usePcContext();
+  
+  
+  
 
   //   nombre: String,
   //   profesor: String,
@@ -51,9 +49,9 @@ const CrearUsuario = () => {
     };
 
     await axios.post("http://localhost:3001/api/cursos", newUser);
-
+    updateStock(stock - usuario.cantidad);
     setUsuario({ ...ValorInicial});
-    
+
   };
 
   const alert = () => {
@@ -128,7 +126,7 @@ const CrearUsuario = () => {
                 onChange={capturarDatos}
               />
             </div>
-            <button className="btn btn-primary form-control" onClick={pushPC}>
+            <button className="btn btn-primary form-control" onClick={alert}>
               Guardar retiro
             </button>
           </form>
