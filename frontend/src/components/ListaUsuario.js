@@ -11,6 +11,7 @@ const ListaUsuario = () => {
     const getLista = async () => {
       const res = await axios.get("http://localhost:3001/api/cursos");
       setLista(res.data);
+
       
     };
     getLista();
@@ -20,8 +21,9 @@ const ListaUsuario = () => {
   
 
   const eliminarCurso = async (id) => {
-    findIdStock(lista, id)
     await axios.delete("http://localhost:3001/api/cursos/" + id);
+    findIdStock(lista, id);
+
   };
 
   const onAdd = (qty) => {
@@ -54,6 +56,7 @@ const ListaUsuario = () => {
                     >
                       Entregar
                     </button>
+
                   </div>
                 </div>
               </div>

@@ -1,6 +1,7 @@
 /*############################################ 
                 Importaciones
 ##############################################*/
+import Swal from "sweetalert2";
 // ! useContext (usar el contexto creado), createContext (Crear el contexto de la aplicacion) => React
 
 import { useContext, createContext, useState } from "react";
@@ -19,14 +20,26 @@ export const usePcContext = () => { return (useContext(pcContext))}
 const PcProvider = ({children}) => {
 
     const [stock, setStock] = useState(120)
+    
 
     const updateStock = (newStock) => {
         setStock(newStock);
     }
+        
+
 
     const findIdStock = (data, id) => {
         const listaEncontrada = data.find(element => element._id === id);
-        setStock(stock + listaEncontrada.cantidad)
+        
+        if (stock + listaEncontrada > 120){
+            Swal.fire(
+                'ERROR',
+                'No se por qué, pero esto no deberia estar pasando',
+                'error'
+              )
+        } else {
+            setStock(stock + listaEncontrada.cantidad)
+        }
     }
 
     return(

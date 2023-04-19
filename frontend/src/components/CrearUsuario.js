@@ -47,9 +47,17 @@ const CrearUsuario = () => {
       horaEntrega: usuario.horaEntrega,
       codigo: usuario.codigo,
     };
-
-    await axios.post("http://localhost:3001/api/cursos", newUser);
-    updateStock(stock - usuario.cantidad);
+    const newStock = stock - usuario.cantidad
+    if (newStock > 0){
+      await axios.post("http://localhost:3001/api/cursos", newUser);
+      updateStock(stock - usuario.cantidad);
+    } else {
+      Swal.fire(
+        'ERROR',
+        'Se acabó el stock',
+        'error'
+      )
+    }
     setUsuario({ ...ValorInicial});
 
   };
