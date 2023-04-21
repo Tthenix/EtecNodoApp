@@ -2,6 +2,8 @@ import React from "react";
 import { usePcContext } from "./Context";
 
 
+
+
 const Contador = () => {
     
     const { stock } = usePcContext();

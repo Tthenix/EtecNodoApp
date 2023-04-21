@@ -5,20 +5,25 @@ import { usePcContext } from "./Context";
 
 const ListaUsuario = () => {
   const [lista, setLista] = useState([]);
-  const { findIdStock } = usePcContext();
+  const { findIdStock, stock, updateStock } = usePcContext();
 
   useEffect(() => {
-    const getLista = async () => {
-      const res = await axios.get("http://localhost:3001/api/cursos");
-      setLista(res.data);
-
-      
-    };
-    getLista();
     
-  }, [lista]);
-
+      const res = axios.get("http://localhost:3001/api/cursos");
+      res.then((res) => {
+        setLista(res.data)
+        const newLista = res.data
+        let stockRetirado = 0
+        newLista.forEach(element => {
+          stockRetirado += element.cantidad;
+          console.log(stockRetirado);
+          updateStock(stock - stockRetirado)
+        });
+        
+      })
+  }, []);
   
+
 
   const eliminarCurso = async (id) => {
     await axios.delete("http://localhost:3001/api/cursos/" + id);
@@ -30,7 +35,7 @@ const ListaUsuario = () => {
     alert(`Entregaste ${qty} computadoras`);
   };
 
-
+  
   return (
     <div className="row">
       <div className="row">
@@ -65,11 +70,12 @@ const ListaUsuario = () => {
         </div>
         <div className="col-6 col-md-2"> 
    
-        <Contador onAdd={onAdd} initial={1} stock={120} />
+        <Contador onAdd={onAdd} initial={1}/>
         </div>
       </div>
     </div>
   );
 };
+
 
 export default ListaUsuario;
