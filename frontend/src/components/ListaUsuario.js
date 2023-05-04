@@ -14,12 +14,13 @@ const ListaUsuario = () => {
         setLista(res.data)
         const newLista = res.data
         let stockRetirado = 0
-        newLista.forEach(element => {
+        if(stock === 120){
+          newLista.forEach(element => {
           stockRetirado += element.cantidad;
           console.log(stockRetirado);
           updateStock(stock - stockRetirado)
         });
-        
+        }
       })
   }, []);
   
@@ -28,7 +29,11 @@ const ListaUsuario = () => {
   const eliminarCurso = async (id) => {
     await axios.delete("http://localhost:3001/api/cursos/" + id);
     findIdStock(lista, id);
-
+    const res = axios.get("http://localhost:3001/api/cursos");
+    res.then((res) => {
+      setLista(res.data)
+      const newLista = res.data
+    })
   };
 
   const onAdd = (qty) => {
@@ -39,10 +44,10 @@ const ListaUsuario = () => {
   return (
     <div className="row">
       <div className="row">
-        <div className="col-md-10">
+        <div className="col-md-10 listas">
           {lista.map((cursos) => (
             <div className="col md-4 p-2" key={cursos._id}>
-              <div className="card listas shadow">
+              <div className="card shadow">
                 <div className="card-header">
                   <div>
                     <h5>Registra: {cursos.nombre}</h5>

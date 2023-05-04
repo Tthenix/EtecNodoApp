@@ -75,8 +75,8 @@ const CrearUsuario = () => {
   };
 
   return (
-    <div className="Crear">
-      <div className="col-md-6 offset-md-3 align-center">
+    <div className="Crear flexContainer">
+      <div className="col-md-6 offset-md-3 align-center formCard">
         <div className="card card-body">
           <form onSubmit={guardarDatos}>
             <h2 className="text-center">Registrar retiro</h2>

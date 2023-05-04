@@ -24,9 +24,22 @@ footer{
 .listas{
     display:flex ;
     flex-wrap: wrap;
+}
+
+.card{
     width: 300px;
 }
 
 .Crear{
     align-items: center;
+}
+
+.formCard{
+    margin: 30px;
+    width: 300px;
+}
+
+.flexContainer{
+    display: flex;
+    justify-content: center;
 }
