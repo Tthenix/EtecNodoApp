@@ -5,13 +5,9 @@ import { useNavigate } from "react-router-dom";
 import { usePcContext } from "./Context";
 
 const CrearUsuario = () => {
-  
+
   const navigate = useNavigate();
   const { updateStock, stock } = usePcContext();
-  
-  
-  
-
   //   nombre: String,
   //   profesor: String,
   //   horaRetirada: Date,
@@ -24,7 +20,7 @@ const CrearUsuario = () => {
     horaRetirada: 18,
     cantidad: 0,
     horaEntrega: "",
-    codigo:"",
+    codigo: "",
   };
 
   const [usuario, setUsuario] = useState(ValorInicial);
@@ -48,7 +44,7 @@ const CrearUsuario = () => {
       codigo: usuario.codigo,
     };
     const newStock = stock - usuario.cantidad
-    if (newStock > 0){
+    if (newStock > 0) {
       await axios.post("http://localhost:3001/api/cursos", newUser);
       updateStock(stock - usuario.cantidad);
     } else {
@@ -58,7 +54,7 @@ const CrearUsuario = () => {
         'error'
       )
     }
-    setUsuario({ ...ValorInicial});
+    setUsuario({ ...ValorInicial });
 
   };
 
@@ -76,7 +72,7 @@ const CrearUsuario = () => {
 
   return (
     <div className="Crear flexContainer">
-      <div className="col-md-6 offset-md-3 align-center formCard">
+      <div className="col-md-10 listas offset-md-3 align-center formCard">
         <div className="card card-body">
           <form onSubmit={guardarDatos}>
             <h2 className="text-center">Registrar retiro</h2>
