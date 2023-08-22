@@ -58,6 +58,7 @@ const ListaUsuario = () => {
                     <p>Curso: {cursos.profesor}</p>
                     <p>Cantidad: {cursos.cantidad}</p>
                   </div>
+
                   <div className="card-footer">
                     <button
                       className="btn btn-danger form-control"

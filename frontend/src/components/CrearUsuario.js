@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
@@ -7,12 +7,15 @@ import { usePcContext } from "./Context";
 const CrearUsuario = () => {
 
   const navigate = useNavigate();
+  const codigoRef = useRef(null); // Referencia para el campo de código
+  useEffect(() => {
+    // Enfocar el campo de código al cargar el componente
+    if (codigoRef.current) {
+      codigoRef.current.focus();
+    }
+  }, []);
+
   const { updateStock, stock } = usePcContext();
-  //   nombre: String,
-  //   profesor: String,
-  //   horaRetirada: Date,
-  //   cantidad: Number,
-  //   horaEntrega: Date
 
   const ValorInicial = {
     nombre: "",
@@ -25,6 +28,17 @@ const CrearUsuario = () => {
 
   const [usuario, setUsuario] = useState(ValorInicial);
 
+  const handleCodigoKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      setUsuario((prevUsuario) => ({
+        ...prevUsuario,
+        cantidad: prevUsuario.cantidad + 1,
+        codigo: prevUsuario.codigo.trim() + "/", // Agregar una barra
+      }));
+    }
+  };
+
   const capturarDatos = (e) => {
     const { name, value } = e.target;
     setUsuario({ ...usuario, [name]: value });
@@ -32,9 +46,7 @@ const CrearUsuario = () => {
 
   const guardarDatos = async (e) => {
     e.preventDefault();
-    console.log(usuario);
 
-    //logica peticion post
     const newUser = {
       nombre: usuario.nombre,
       profesor: usuario.profesor,
@@ -43,19 +55,15 @@ const CrearUsuario = () => {
       horaEntrega: usuario.horaEntrega,
       codigo: usuario.codigo,
     };
-    const newStock = stock - usuario.cantidad
+
+    const newStock = stock - usuario.cantidad;
     if (newStock > 0) {
       await axios.post("http://localhost:3001/api/cursos", newUser);
       updateStock(stock - usuario.cantidad);
     } else {
-      Swal.fire(
-        'ERROR',
-        'Se acabó el stock',
-        'error'
-      )
+      Swal.fire("ERROR", "Se acabó el stock", "error");
     }
     setUsuario({ ...ValorInicial });
-
   };
 
   const alert = () => {
@@ -66,7 +74,6 @@ const CrearUsuario = () => {
       if (result.isConfirmed) {
         navigate({ pathname: "/" });
       }
-
     });
   };
 
@@ -122,11 +129,13 @@ const CrearUsuario = () => {
               <label>Codigo de computadora:</label>
 
               <textarea
+                ref={codigoRef} // Asignar la referencia al campo
                 className="form-control"
                 placeholder="ingresar codigo de computadora"
                 required
                 name="codigo"
                 value={usuario.codigo}
+                onKeyDown={handleCodigoKeyDown}
                 onChange={capturarDatos}
               />
             </div>

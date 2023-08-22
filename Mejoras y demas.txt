@@ -1,0 +1,5 @@
+apenas abris ingreso de compu seleccione la opcion de ingresar codigo
+mostar hora de ingreso y de retirada
+agregar demas dispositivos
+arreglar nombres de clases 
+agregar boton de editar card 
