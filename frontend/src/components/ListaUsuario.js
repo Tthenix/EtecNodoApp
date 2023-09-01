@@ -2,11 +2,20 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Contador from "./Contador";
 import { usePcContext } from "./Context";
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const ListaUsuario = () => {
+
   const [lista, setLista] = useState([]);
   const { findIdStock, stock, updateStock } = usePcContext();
   const [codigosVisible, setCodigosVisible] = useState({});
+  const [editingCourse, setEditingCourse] = useState(null);
+
+  const editarCurso = (cursoId) => {
+    setEditingCourse(cursoId);
+  };
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -60,18 +69,29 @@ const ListaUsuario = () => {
                   </div>
 
                   <div className="card-footer">
-                    <button
-                      className="btn btn-danger form-control"
-                      onClick={() => eliminarCurso(cursos._id)}
-                    >
-                      Entregar
-                    </button>
-                    <button
-                      className="btn btn-secondary form-control mt-2"
-                      onClick={() => toggleCodigosVisible(cursos._id)}
-                    >
-                      {codigosVisible[cursos._id] ? 'Ocultar Códigos' : 'Mostrar Códigos'}
-                    </button>
+                    <div className="mb-2">
+                      <button
+                        className="btn btn-success form-control"
+                        onClick={() => eliminarCurso(cursos._id)}
+                      >
+                        Entregar
+                      </button>
+                    </div>
+                    <div className="mb-2">
+                      <Link to={`/editpage/${cursos._id}`}>
+                        <button className="btn btn-primary form-control">
+                          Editar
+                        </button>
+                      </Link>
+                    </div>
+                    <div className="mb-2">
+                      <button
+                        className="btn btn-secondary form-control"
+                        onClick={() => toggleCodigosVisible(cursos._id)}
+                      >
+                        {codigosVisible[cursos._id] ? 'Ocultar Códigos' : 'Mostrar Códigos'}
+                      </button>
+                    </div>
                     {codigosVisible[cursos._id] && (
                       <div>
                         <p>Códigos de computadora:</p>

@@ -5,27 +5,24 @@ import { useNavigate } from "react-router-dom";
 import { usePcContext } from "./Context";
 
 const CrearUsuario = () => {
-
   const navigate = useNavigate();
-  const codigoRef = useRef(null); // Referencia para el campo de código
+  const { updateStock, stock } = usePcContext();
+
+  const ValorInicial = {
+    nombre: "",
+    profesor: "",
+    horaRetirada: "",
+    cantidad: 0,
+    horaEntrega: "",
+    codigo: "",
+  };
+  const codigoRef = useRef(null);
   useEffect(() => {
     // Enfocar el campo de código al cargar el componente
     if (codigoRef.current) {
       codigoRef.current.focus();
     }
   }, []);
-
-  const { updateStock, stock } = usePcContext();
-
-  const ValorInicial = {
-    nombre: "",
-    profesor: "",
-    horaRetirada: 18,
-    cantidad: 0,
-    horaEntrega: "",
-    codigo: "",
-  };
-
   const [usuario, setUsuario] = useState(ValorInicial);
 
   const handleCodigoKeyDown = (e) => {
