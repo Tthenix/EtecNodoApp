@@ -33,13 +33,6 @@ const CrearUsuario = () => {
         cantidad: prevUsuario.cantidad + 1,
         codigo: prevUsuario.codigo.trim() + "/", // Agregar una barra
       }));
-    } else if (e.key === "Backspace" && usuario.codigo.endsWith("/")) {
-      e.preventDefault();
-      setUsuario((prevUsuario) => ({
-        ...prevUsuario,
-        cantidad: prevUsuario.cantidad - 1,
-        codigo: prevUsuario.codigo.slice(0, -1), // Eliminar la última barra
-      }));
     }
   };
 
@@ -80,6 +73,7 @@ const CrearUsuario = () => {
       }
     });
   };
+
   return (
     <div className="Crear flexContainer">
       <div className="col-md-10 listas offset-md-3 align-center formCard">
@@ -151,6 +145,5 @@ const CrearUsuario = () => {
     </div>
   );
 };
-
 
 export default CrearUsuario;

@@ -1,3 +1,4 @@
+const moment = require("moment-timezone");
 const cursoCtrl = {}
 
 const Curso = require("../models/user")
@@ -8,11 +9,16 @@ cursoCtrl.getCurso = async (req, res) => {
 }
 
 cursoCtrl.createCurso = async (req, res) => {
-    const { nombre, profesor, horaRetirada, cantidad, horaEntrega, codigo } = req.body
+    const { nombre, profesor, cantidad, horaEntrega, codigo } = req.body;
+
+    // Obtener la hora actual en la zona horaria de Argentina
+    const horaRetirada = moment().tz("America/Argentina/Buenos_Aires").format("YYYY-MM-DDTHH:mm:ss");
+
     const newCurso = new Curso({ nombre, profesor, horaRetirada, cantidad, horaEntrega, codigo });
     await newCurso.save();
-    res.json({ message: "el curso ha sido añadido" })
+    res.json({ message: "El curso ha sido añadido" });
 }
+
 
 cursoCtrl.getCursoEspecifico = async (req, res) => {
     const curso = await Curso.findById(req.params.id)
@@ -36,6 +42,7 @@ cursoCtrl.updateCurso = async (req, res) => {
     })
     res.json({ message: "El curso fue actualizado" })
 }
+
 
 
 module.exports = cursoCtrl;

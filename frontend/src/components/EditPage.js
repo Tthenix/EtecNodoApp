@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useParams, useNavigate } from "react-router-dom";
-import { usePcContext } from "./Context";
+import { pcContext } from "./Context"; // Importa el contexto
 
 const EditPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { updateStock, stock } = usePcContext();
+    const { stock, updateStock } = useContext(pcContext); // Usa el contexto
 
     const ValorInicial = {
         nombre: "",
@@ -22,6 +22,8 @@ const EditPage = () => {
     const [editedCurso, setEditedCurso] = useState({});
     const [message, setMessage] = useState("");
     const [usuario, setUsuario] = useState(ValorInicial);
+    const [codigoAEliminar, setCodigoAEliminar] = useState("");
+    const [codigoTextareaHeight, setCodigoTextareaHeight] = useState("auto");
 
     useEffect(() => {
         fetchCurso();
@@ -31,11 +33,12 @@ const EditPage = () => {
         try {
             const response = await axios.get(`http://localhost:3001/api/cursos/${id}`);
             setCurso(response.data);
-            setEditedCurso(response.data); // Inicializar los campos con el valor del curso
+            setEditedCurso(response.data);
         } catch (error) {
             console.error("Error fetching curso:", error);
         }
     };
+
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
@@ -44,26 +47,20 @@ const EditPage = () => {
             [name]: value,
         }));
     };
-
     const handleSubmit = async (event) => {
-        event.preventDefault(); // Evita la recarga automática de la página
+        event.preventDefault();
 
-        // Calcula la diferencia entre la cantidad anterior y la nueva cantidad
         const cantidadDiferencia = editedCurso.cantidad - curso.cantidad;
 
         if (cantidadDiferencia > 0) {
-            // Verifica si hay suficiente stock para la nueva cantidad
             if (stock - cantidadDiferencia >= 0) {
                 try {
-                    // Actualiza el curso si hay suficiente stock
                     await axios.put(`http://localhost:3001/api/cursos/${id}`, editedCurso);
                     setMessage("Curso actualizado correctamente");
 
-                    // Ajusta el stock en consecuencia
                     const newStock = stock - cantidadDiferencia;
-                    updateStock(newStock);
+                    updateStock(newStock); // Actualiza el stock utilizando el contexto
 
-                    // Navega de regreso al home después de guardar los cambios
                     navigate({ pathname: "/" });
                 } catch (error) {
                     console.error("Error updating curso:", error);
@@ -73,7 +70,6 @@ const EditPage = () => {
                 Swal.fire("ERROR", "No hay suficiente stock para la nueva cantidad", "error");
             }
         } else {
-            // Si la cantidad no cambia, simplemente actualiza el curso sin verificar el stock
             try {
                 await axios.put(`http://localhost:3001/api/cursos/${id}`, editedCurso);
                 setMessage("Curso actualizado correctamente");
@@ -84,6 +80,7 @@ const EditPage = () => {
             }
         }
     };
+
 
     const alert = () => {
         Swal.fire({
@@ -115,6 +112,56 @@ const EditPage = () => {
             }));
         }
     };
+
+    const ajustarAlturaTextarea = () => {
+        const textarea = document.getElementById("codigo-textarea");
+        textarea.style.height = "auto";
+        textarea.style.height = `${textarea.scrollHeight}px`;
+    };
+
+    useEffect(() => {
+        ajustarAlturaTextarea();
+    }, [editedCurso.codigo]);
+
+    const eliminarCodigo = () => {
+        if (codigoAEliminar.trim() === "") {
+            // Si el campo de eliminar código está vacío, muestra una alerta
+            Swal.fire("ADVERTENCIA", "Ingrese un código a eliminar", "warning");
+            return;
+        }
+
+        const codigoAEliminarRegex = new RegExp(`${codigoAEliminar}/`, "g");
+
+        // Verificar si el código a eliminar existe en la cadena actual
+        if (!editedCurso.codigo.match(codigoAEliminarRegex)) {
+            Swal.fire("ADVERTENCIA", "El código a eliminar no existe en la cadena", "warning");
+            return;
+        }
+
+        const codigoActualizado = editedCurso.codigo.replace(codigoAEliminarRegex, "");
+        setEditedCurso((prevCurso) => ({
+            ...prevCurso,
+            cantidad: prevCurso.cantidad - 1, // Restar 1 al contador al eliminar un código
+            codigo: codigoActualizado,
+        }));
+        setCodigoAEliminar(""); // Reiniciar el campo de código a eliminar
+
+        // Actualizar el stock
+        const codigoEliminado = editedCurso.codigo.match(new RegExp(codigoAEliminar, "g"));
+        if (codigoEliminado) {
+            const cantidadEliminada = codigoEliminado.length;
+            updateStock(stock + cantidadEliminada); // Incrementar o decrementar el stock según la cantidad eliminada
+        }
+    };
+
+    const codigoDelRef = useRef(null);
+    useEffect(() => {
+        // Enfocar el campo de código al cargar el componente
+        if (codigoDelRef.current) {
+            codigoDelRef.current.focus();
+        }
+    }, []);
+
     return (
         <div className="Crear flexContainer">
             <div className="col-md-10 listas offset-md-3 align-center formCard">
@@ -130,14 +177,13 @@ const EditPage = () => {
                                 placeholder="Nombre del curso"
                                 required
                                 name="nombre"
-                                value={editedCurso.nombre || ""} // Inicializar con el valor del curso
+                                value={editedCurso.nombre || ""}
                                 onChange={handleInputChange}
                             />
                         </div>
 
                         <div className="mb-3">
                             <label>Curso:</label>
-
                             <input
                                 type="text"
                                 className="form-control"
@@ -151,7 +197,6 @@ const EditPage = () => {
 
                         <div className="mb-3">
                             <label>Cantidad:</label>
-
                             <input
                                 type="number"
                                 className="form-control"
@@ -162,22 +207,52 @@ const EditPage = () => {
                                 onChange={handleInputChange}
                             />
                         </div>
+
                         <div className="mb-3">
                             <label>Codigo de computadora:</label>
-
                             <textarea
+                                id="codigo-textarea"
                                 className="form-control"
                                 placeholder="Ingresar codigo de computadora"
                                 required
                                 name="codigo"
                                 value={editedCurso.codigo}
                                 onKeyDown={handleCodigoKeyDown}
-                                onChange={handleInputChange}
+                                onChange={(e) => {
+                                    setEditedCurso((prevCurso) => ({
+                                        ...prevCurso,
+                                        codigo: e.target.value,
+                                    }));
+                                    ajustarAlturaTextarea();
+                                }}
+                                style={{ height: codigoTextareaHeight }}
                             />
                         </div>
-                        <button type="submit" className="btn btn-primary form-control" onClick={alert}>
-                            Guardar cambios
-                        </button>
+
+                        <div className="mb-3">
+                            <label>Eliminar código:</label>
+                            <input
+                                type="text"
+                                ref={codigoDelRef} // Asignar la referencia al campo
+                                className="form-control"
+                                placeholder="Ingrese el código a eliminar"
+                                value={codigoAEliminar}
+                                onChange={(e) => setCodigoAEliminar(e.target.value)}
+                            />
+                        </div>
+
+                        <div className="mb-2">
+                            <button type="button" className="btn btn-danger btn-sm form-control" onClick={eliminarCodigo}>
+                                Eliminar código
+                            </button>
+                        </div>
+
+                        <div className="mb-2">
+                            <button type="submit" className="btn btn-primary form-control" onClick={alert}>
+                                Guardar cambios
+                            </button>
+                        </div>
+
                         <p>{message}</p>
                     </form>
                 </div>
@@ -185,4 +260,5 @@ const EditPage = () => {
         </div>
     );
 };
+
 export default EditPage;
