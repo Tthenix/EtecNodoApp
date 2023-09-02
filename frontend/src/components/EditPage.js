@@ -45,7 +45,9 @@ const EditPage = () => {
         }));
     };
 
-    const handleUpdateCurso = async () => {
+    const handleSubmit = async (event) => {
+        event.preventDefault(); // Evita la recarga automática de la página
+
         // Calcula la diferencia entre la cantidad anterior y la nueva cantidad
         const cantidadDiferencia = editedCurso.cantidad - curso.cantidad;
 
@@ -61,7 +63,8 @@ const EditPage = () => {
                     const newStock = stock - cantidadDiferencia;
                     updateStock(newStock);
 
-                    fetchCurso();
+                    // Navega de regreso al home después de guardar los cambios
+                    navigate({ pathname: "/" });
                 } catch (error) {
                     console.error("Error updating curso:", error);
                     setMessage("Hubo un error al actualizar el curso");
@@ -93,11 +96,30 @@ const EditPage = () => {
         });
     };
 
+    const handleCodigoKeyDown = (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            const updatedCodigo = editedCurso.codigo.trim() + "/";
+            setEditedCurso((prevCurso) => ({
+                ...prevCurso,
+                cantidad: prevCurso.cantidad + 1,
+                codigo: updatedCodigo,
+            }));
+        } else if (e.key === "Backspace" && editedCurso.codigo.endsWith("/")) {
+            e.preventDefault();
+            const updatedCodigo = editedCurso.codigo.slice(0, -1);
+            setEditedCurso((prevCurso) => ({
+                ...prevCurso,
+                cantidad: prevCurso.cantidad - 1,
+                codigo: updatedCodigo,
+            }));
+        }
+    };
     return (
         <div className="Crear flexContainer">
             <div className="col-md-10 listas offset-md-3 align-center formCard">
                 <div className="card card-body">
-                    <form onSubmit={handleUpdateCurso}>
+                    <form onSubmit={handleSubmit}>
                         <h2 className="text-center">Editar Curso</h2>
 
                         <div className="mb-3">
@@ -149,14 +171,14 @@ const EditPage = () => {
                                 required
                                 name="codigo"
                                 value={editedCurso.codigo}
+                                onKeyDown={handleCodigoKeyDown}
                                 onChange={handleInputChange}
                             />
                         </div>
-                        <button className="btn btn-primary form-control" onClick={alert}>
+                        <button type="submit" className="btn btn-primary form-control" onClick={alert}>
                             Guardar cambios
                         </button>
                         <p>{message}</p>
-
                     </form>
                 </div>
             </div>
