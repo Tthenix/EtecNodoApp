@@ -16,6 +16,7 @@ const CrearUsuario = () => {
     horaEntrega: "",
     codigo: "",
   };
+
   const codigoRef = useRef(null);
   useEffect(() => {
     // Enfocar el campo de código al cargar el componente
@@ -110,6 +111,18 @@ const CrearUsuario = () => {
             </div>
 
             <div className="mb-3">
+              <label>Hora de Entrega:</label>
+              <input
+                type="datetime-local" // Usa el tipo 'datetime-local' para capturar la hora y fecha
+                className="form-control"
+                required
+                name="horaEntrega"
+                value={usuario.horaEntrega}
+                onChange={capturarDatos}
+              />
+            </div>
+
+            <div className="mb-3">
               <label>Cantidad:</label>
 
               <input
@@ -122,6 +135,7 @@ const CrearUsuario = () => {
                 onChange={capturarDatos}
               />
             </div>
+
             <div className="mb-3">
               <label>Codigo de computadora:</label>
 

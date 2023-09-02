@@ -3,30 +3,56 @@ import React, { useEffect, useState } from "react";
 import Contador from "./Contador";
 import { usePcContext } from "./Context";
 import { Link } from "react-router-dom";
+import moment from "moment-timezone"; // Importa moment-timezone
 import { useNavigate } from "react-router-dom";
 
 const ListaUsuario = () => {
-
   const [lista, setLista] = useState([]);
   const { findIdStock, stock, updateStock } = usePcContext();
   const [codigosVisible, setCodigosVisible] = useState({});
   const [editingCourse, setEditingCourse] = useState(null);
+  const [coursesWithExpiredDelivery, setCoursesWithExpiredDelivery] = useState([]); // Array de cursos con entregas vencidas
+  const [showAlert, setShowAlert] = useState(false); // Estado para mostrar la alerta
 
   const editarCurso = (cursoId) => {
     setEditingCourse(cursoId);
   };
 
-
   useEffect(() => {
     const fetchData = async () => {
       const res = await axios.get("http://localhost:3001/api/cursos");
-      const cursosData = res.data;
+      const cursosData = res.data.map((curso) => {
+        // Formatea la hora de retirada a la zona horaria de Argentina (Buenos Aires)
+        const horaRetiradaArgentina = moment(curso.horaRetirada).tz("America/Argentina/Buenos_Aires").format("YYYY-MM-DD HH:mm:ss");
+
+        // Formatea la hora de actualización (updatedAt) a la zona horaria de Argentina (Buenos Aires)
+        const updatedAtArgentina = moment(curso.updatedAt).tz("America/Argentina/Buenos_Aires").format("YYYY-MM-DD HH:mm:ss");
+
+        const horaEntregaAtArgentina = moment(curso.horaEntrega).tz("America/Argentina/Buenos_Aires").format("YYYY-MM-DD HH:mm:ss");
+
+        return { ...curso, horaRetirada: horaRetiradaArgentina, updatedAt: updatedAtArgentina, horaEntrega: horaEntregaAtArgentina };
+      });
       setLista(cursosData);
 
       if (stock === 120) {
         const stockRetirado = cursosData.reduce((total, curso) => total + curso.cantidad, 0);
         updateStock(stock - stockRetirado);
       }
+
+      // Configurar un temporizador para comprobar si se ha cumplido la hora de entrega
+      const timer = setInterval(() => {
+        const cursosConEntregaVencida = cursosData.filter((curso) => moment(curso.horaEntrega).isBefore(moment()));
+        if (cursosConEntregaVencida.length > 0) {
+          setCoursesWithExpiredDelivery(cursosConEntregaVencida);
+          setShowAlert(true);
+        } else {
+          setCoursesWithExpiredDelivery([]);
+          setShowAlert(false);
+        }
+      }, 60000); // Comprobar cada minuto
+
+      // Limpieza del temporizador al desmontar el componente
+      return () => clearInterval(timer);
     };
 
     fetchData();
@@ -36,7 +62,23 @@ const ListaUsuario = () => {
     await axios.delete("http://localhost:3001/api/cursos/" + id);
     findIdStock(lista, id);
     const res = await axios.get("http://localhost:3001/api/cursos");
-    setLista(res.data);
+    const cursosData = res.data.map((curso) => {
+      // Formatea la hora de retirada a la zona horaria de Argentina (Buenos Aires)
+      const horaRetiradaArgentina = moment(curso.horaRetirada).tz("America/Argentina/Buenos_Aires").format("YYYY-MM-DD HH:mm:ss");
+
+      // Formatea la hora de actualización (updatedAt) a la zona horaria de Argentina (Buenos Aires)
+      const updatedAtArgentina = moment(curso.updatedAt).tz("America/Argentina/Buenos_Aires").format("YYYY-MM-DD HH:mm:ss");
+
+      const horaEntregaAtArgentina = moment(curso.horaEntrega).tz("America/Argentina/Buenos_Aires").format("YYYY-MM-DD HH:mm:ss");
+
+      return { ...curso, horaRetirada: horaRetiradaArgentina, updatedAt: updatedAtArgentina, horaEntrega: horaEntregaAtArgentina };
+    });
+    setLista(cursosData);
+
+    // Ocultar la alerta al entregar el curso
+    if (coursesWithExpiredDelivery.some((curso) => curso._id === id)) {
+      setCoursesWithExpiredDelivery(coursesWithExpiredDelivery.filter((curso) => curso._id !== id));
+    }
   };
 
   const toggleCodigosVisible = (cursoId) => {
@@ -55,6 +97,20 @@ const ListaUsuario = () => {
       <div className="row">
         <div className="col-md-10">
           <div className="row">
+            {showAlert && coursesWithExpiredDelivery.length > 0 && ( // Muestra la alerta si showAlert es true y hay cursos con entrega vencida
+              <div className="col-md-12 mb-3">
+                <div className="alert alert-danger">
+                  <p>¡La hora de entrega ha pasado para los siguientes cursos:</p>
+                  <ul>
+                    {coursesWithExpiredDelivery.map((curso) => (
+                      <li key={curso._id}>
+                        {curso.nombre} (curso: {curso.profesor})
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
             {lista.map((cursos) => (
               <div className="col-md-4 p-2" key={cursos._id}>
                 <div className="card shadow">
@@ -66,6 +122,9 @@ const ListaUsuario = () => {
                   <div className="card-body">
                     <p>Curso: {cursos.profesor}</p>
                     <p>Cantidad: {cursos.cantidad}</p>
+                    <p>Fecha y hora de retirada: {cursos.horaRetirada}</p>
+                    <p>Fecha y hora de actualización: {cursos.updatedAt}</p>
+                    <p>Fecha y hora de entrega: {cursos.horaEntrega}</p>
                   </div>
 
                   <div className="card-footer">
@@ -110,6 +169,6 @@ const ListaUsuario = () => {
       </div>
     </div>
   );
-}
+};
 
 export default ListaUsuario;
