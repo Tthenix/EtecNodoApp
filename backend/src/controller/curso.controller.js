@@ -30,7 +30,7 @@ cursoCtrl.deleteCurso = async (req, res) => {
 };
 
 cursoCtrl.updateCurso = async (req, res) => {
-    const { nombre, profesor, horaRetirada, cantidad, horaEntrega, codigo } = req.body;
+    const { nombre, profesor, horaRetirada, cantidad, horaEntrega, codigo, tipoArticulo } = req.body;
     await Curso.findByIdAndUpdate(req.params.id, {
         nombre,
         profesor,
@@ -38,7 +38,7 @@ cursoCtrl.updateCurso = async (req, res) => {
         cantidad,
         horaEntrega,
         codigo,
-        tipoArticulo: [String],
+        tipoArticulo, // Usa el valor del formulario para tipoArticulo
     });
     res.json({ message: "El curso fue actualizado" });
 };

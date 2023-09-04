@@ -114,7 +114,15 @@ const ListaUsuario = () => {
                   <div className="card-body">
                     <p>Curso: {cursos.profesor}</p>
                     <p>Cantidad: {cursos.cantidad}</p>
-                    <p>tipoArticulo: {cursos.tipoArticulo}</p>
+                    <p>
+                      Artículos:
+                      {cursos.tipoArticulo.map((tipo, index) => (
+                        <span key={index}>
+                          {index > 0 && ", "} {/* Separador de comas entre tipos */}
+                          {tipo}
+                        </span>
+                      ))}
+                    </p>
                     <p>Fecha y hora de retirada: {cursos.horaRetirada}</p>
                     <p>Fecha y hora de actualización: {cursos.updatedAt}</p>
                     <p>Fecha y hora de entrega: {cursos.horaEntrega}</p>

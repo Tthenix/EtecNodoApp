@@ -5,7 +5,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { pcContext } from "./Context"; // Importa el contexto
 import moment from "moment-timezone";
 
-
 const EditPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -18,12 +17,12 @@ const EditPage = () => {
         cantidad: 0,
         horaEntrega: "",
         codigo: "",
+        tipoArticulo: [],
     };
 
     const [curso, setCurso] = useState({});
-    const [editedCurso, setEditedCurso] = useState({});
+    const [formData, setFormData] = useState(ValorInicial);
     const [message, setMessage] = useState("");
-    const [usuario, setUsuario] = useState(ValorInicial);
     const [codigoAEliminar, setCodigoAEliminar] = useState("");
     const [codigoTextareaHeight, setCodigoTextareaHeight] = useState("auto");
 
@@ -41,47 +40,53 @@ const EditPage = () => {
                 .tz("America/Argentina/Buenos_Aires")
                 .format("YYYY-MM-DD HH:mm:ss");
 
-            // Modifica el objeto editedCurso para incluir la hora de entrega formateada
-            setEditedCurso({ ...response.data, horaEntrega: horaEntregaArgentina });
+            // Antes de asignar a formData.tipoArticulo, asegúrate de que sea un array de strings
+            const tipoArticulo = Array.isArray(response.data.tipoArticulo)
+                ? response.data.tipoArticulo
+                : [response.data.tipoArticulo];
+
+            // Asigna tipoArticulo a formData.tipoArticulo
+            setFormData({ ...response.data, horaEntrega: horaEntregaArgentina, tipoArticulo });
         } catch (error) {
             console.error("Error fetching curso:", error);
         }
     };
 
     const handleInputChange = (event) => {
-        const { name, value } = event.target;
-        setEditedCurso((prevCurso) => ({
-            ...prevCurso,
-            [name]: value,
+        const { name, value, options } = event.target;
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: name === "tipoArticulo" ? Array.from(options).filter((option) => option.selected).map((option) => option.value) : value,
         }));
     };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        const cantidadDiferencia = editedCurso.cantidad - curso.cantidad;
+        const cantidadDiferencia = formData.cantidad - curso.cantidad;
 
         if (cantidadDiferencia > 0) {
             if (stock - cantidadDiferencia >= 0) {
                 try {
-                    await axios.put(`http://localhost:3001/api/cursos/${id}`, editedCurso);
+                    await axios.put(`http://localhost:3001/api/cursos/${id}`, formData);
                     setMessage("Curso actualizado correctamente");
 
                     const newStock = stock - cantidadDiferencia;
-                    updateStock(newStock); // Actualiza el stock utilizando el contexto
+                    updateStock(newStock);
 
                     navigate({ pathname: "/" });
                 } catch (error) {
                     console.error("Error updating curso:", error);
-                    setMessage("Hubo un error al actualizar el curso");
+                    setMessage("Hubo un error al actualizar el curso"); // Esto mostrará un mensaje de error en caso de falla
                 }
             } else {
                 Swal.fire("ERROR", "No hay suficiente stock para la nueva cantidad", "error");
             }
         } else {
             try {
-                await axios.put(`http://localhost:3001/api/cursos/${id}`, editedCurso);
+                await axios.put(`http://localhost:3001/api/cursos/${id}`, formData);
                 setMessage("Curso actualizado correctamente");
-                fetchCurso(); // Recargar los datos del curso después de la actualización
+                fetchCurso();
             } catch (error) {
                 console.error("Error updating curso:", error);
                 setMessage("Hubo un error al actualizar el curso");
@@ -89,37 +94,55 @@ const EditPage = () => {
         }
     };
 
-
     const alert = () => {
         Swal.fire({
             title: "Do you want to save the changes?",
+            showCancelButton: true, // Mostrar el botón de cancelar
             confirmButtonText: "Save",
         }).then((result) => {
             if (result.isConfirmed) {
-                navigate({ pathname: "/" });
+                guardarCambios(); // Llamar a la función para guardar los cambios aquí
             }
         });
+    };
+
+    const guardarCambios = async () => {
+        // Tu código para guardar los cambios
+        try {
+            await axios.put(`http://localhost:3001/api/cursos/${id}`, formData);
+            setMessage("Curso actualizado correctamente");
+            fetchCurso();
+        } catch (error) {
+            console.error("Error updating curso:", error);
+            setMessage("Hubo un error al actualizar el curso");
+        }
+        navigate({ pathname: "/" }); // Redirigir después de guardar los cambios
     };
 
     const handleCodigoKeyDown = (e) => {
         if (e.key === "Enter") {
             e.preventDefault();
-            const updatedCodigo = editedCurso.codigo.trim() + "/";
-            setEditedCurso((prevCurso) => ({
-                ...prevCurso,
-                cantidad: prevCurso.cantidad + 1,
+            const updatedCodigo = `${formData.codigo.trim()}/`; // Agrega una barra "/" al valor actual
+
+            setFormData((prevData) => ({
+                ...prevData,
+                cantidad: prevData.cantidad + 1, // Incrementar la cantidad
                 codigo: updatedCodigo,
             }));
-        } else if (e.key === "Backspace" && editedCurso.codigo.endsWith("/")) {
+
+            // Actualizar el stock restando 1
+            updateStock(stock - 1);
+        } else if (e.key === "Backspace" && formData.codigo.endsWith(" ")) {
             e.preventDefault();
-            const updatedCodigo = editedCurso.codigo.slice(0, -1);
-            setEditedCurso((prevCurso) => ({
-                ...prevCurso,
-                cantidad: prevCurso.cantidad - 1,
+            const updatedCodigo = formData.codigo.slice(0, -1);
+            setFormData((prevData) => ({
+                ...prevData,
+                cantidad: prevData.cantidad - 1, // Restar 1 a la cantidad
                 codigo: updatedCodigo,
             }));
         }
     };
+
 
     const ajustarAlturaTextarea = () => {
         const textarea = document.getElementById("codigo-textarea");
@@ -129,37 +152,51 @@ const EditPage = () => {
 
     useEffect(() => {
         ajustarAlturaTextarea();
-    }, [editedCurso.codigo]);
+    }, [formData.codigo]);
+
 
     const eliminarCodigo = () => {
         if (codigoAEliminar.trim() === "") {
             // Si el campo de eliminar código está vacío, muestra una alerta
-            Swal.fire("ADVERTENCIA", "Ingrese un código a eliminar", "warning");
+            Swal.fire("ADVERTENCIA", "Ingrese códigos a eliminar separados por comas", "warning");
             return;
         }
 
-        const codigoAEliminarRegex = new RegExp(`${codigoAEliminar}/`, "g");
+        const codigosAEliminar = codigoAEliminar.split(",").map((codigo) => codigo.trim());
 
-        // Verificar si el código a eliminar existe en la cadena actual
-        if (!editedCurso.codigo.match(codigoAEliminarRegex)) {
-            Swal.fire("ADVERTENCIA", "El código a eliminar no existe en la cadena", "warning");
+        if (codigosAEliminar.length === 0) {
+            Swal.fire("ADVERTENCIA", "Ingrese códigos a eliminar separados por comas", "warning");
             return;
         }
 
-        const codigoActualizado = editedCurso.codigo.replace(codigoAEliminarRegex, "");
-        setEditedCurso((prevCurso) => ({
-            ...prevCurso,
-            cantidad: prevCurso.cantidad - 1, // Restar 1 al contador al eliminar un código
+        let codigoActualizado = formData.codigo;
+        let cantidadEliminada = 0;
+
+        codigosAEliminar.forEach((codigoEliminar) => {
+            const codigoAEliminarRegex = new RegExp(`${codigoEliminar}\\/`, "g"); // Buscar códigos seguidos de una barra "/"
+
+            // Verificar si el código a eliminar existe en la cadena actual
+            if (codigoActualizado.match(codigoAEliminarRegex)) {
+                codigoActualizado = codigoActualizado.replace(codigoAEliminarRegex, "");
+                cantidadEliminada++;
+            }
+        });
+
+        if (cantidadEliminada === 0) {
+            Swal.fire("ADVERTENCIA", "Los códigos a eliminar no existen en la cadena", "warning");
+            return;
+        }
+
+        setFormData((prevData) => ({
+            ...prevData,
+            cantidad: prevData.cantidad - cantidadEliminada, // Restar cantidadEliminada al contador
             codigo: codigoActualizado,
         }));
+
         setCodigoAEliminar(""); // Reiniciar el campo de código a eliminar
 
         // Actualizar el stock
-        const codigoEliminado = editedCurso.codigo.match(new RegExp(codigoAEliminar, "g"));
-        if (codigoEliminado) {
-            const cantidadEliminada = codigoEliminado.length;
-            updateStock(stock + cantidadEliminada); // Incrementar o decrementar el stock según la cantidad eliminada
-        }
+        updateStock(stock + cantidadEliminada); // Incrementar el stock según la cantidad eliminada
     };
 
     const codigoDelRef = useRef(null);
@@ -185,7 +222,7 @@ const EditPage = () => {
                                 placeholder="Nombre del curso"
                                 required
                                 name="nombre"
-                                value={editedCurso.nombre || ""}
+                                value={formData.nombre || ""}
                                 onChange={handleInputChange}
                             />
                         </div>
@@ -198,9 +235,26 @@ const EditPage = () => {
                                 placeholder="Ingresar nombre del profesor"
                                 required
                                 name="profesor"
-                                value={editedCurso.profesor}
+                                value={formData.profesor}
                                 onChange={handleInputChange}
                             />
+                        </div>
+
+                        <div className="mb-3">
+                            <label>Seleccionar tipo(s) de dispositivos:</label>
+                            <select
+                                className="form-control"
+                                required
+                                name="tipoArticulo"
+                                multiple // Permitir selecciones múltiples
+                                value={formData.tipoArticulo}
+                                onChange={handleInputChange}
+                            >
+                                <option value="notebook">Notebook</option>
+                                <option value="proyecto">Proyector</option>
+                                <option value="parlante">Parlante</option>
+                                {/* Agrega más opciones según tus necesidades */}
+                            </select>
                         </div>
 
                         <div className="mb-3">
@@ -211,7 +265,7 @@ const EditPage = () => {
                                 placeholder="Ingresar cantidad de computadoras retiradas"
                                 required
                                 name="cantidad"
-                                value={editedCurso.cantidad}
+                                value={formData.cantidad}
                                 onChange={handleInputChange}
                             />
                         </div>
@@ -224,7 +278,7 @@ const EditPage = () => {
                                 placeholder="Ingrese la hora de entrega"
                                 required
                                 name="horaEntrega"
-                                value={editedCurso.horaEntrega}
+                                value={formData.horaEntrega}
                                 onChange={handleInputChange}
                             />
                         </div>
@@ -237,11 +291,11 @@ const EditPage = () => {
                                 placeholder="Ingresar codigo de computadora"
                                 required
                                 name="codigo"
-                                value={editedCurso.codigo}
+                                value={formData.codigo}
                                 onKeyDown={handleCodigoKeyDown}
                                 onChange={(e) => {
-                                    setEditedCurso((prevCurso) => ({
-                                        ...prevCurso,
+                                    setFormData((prevData) => ({
+                                        ...prevData,
                                         codigo: e.target.value,
                                     }));
                                     ajustarAlturaTextarea();
@@ -254,24 +308,37 @@ const EditPage = () => {
                             <label>Eliminar código:</label>
                             <input
                                 type="text"
-                                ref={codigoDelRef} // Asignar la referencia al campo
+                                ref={codigoDelRef}
                                 className="form-control"
                                 placeholder="Ingrese el código a eliminar"
                                 value={codigoAEliminar}
                                 onChange={(e) => setCodigoAEliminar(e.target.value)}
+                                onKeyPress={(e) => {
+                                    if (e.key === 'Enter') {
+                                        setCodigoAEliminar((prevValue) => prevValue + ','); // Agrega una coma al valor actual
+                                        e.preventDefault(); // Evita que se agregue una nueva línea (Enter) en el campo
+                                    }
+                                }}
                             />
                         </div>
 
                         <div className="mb-2">
-                            <button type="button" className="btn btn-danger btn-sm form-control" onClick={eliminarCodigo}>
+                            <div
+                                className="btn btn-danger btn-sm form-control"
+                                onClick={eliminarCodigo}
+                            >
                                 Eliminar código
-                            </button>
+                            </div>
                         </div>
 
                         <div className="mb-2">
-                            <button type="submit" className="btn btn-primary form-control" onClick={alert}>
+                            <div
+
+                                className="btn btn-primary form-control"
+                                onClick={alert}
+                            >
                                 Guardar cambios
-                            </button>
+                            </div>
                         </div>
 
                         <p>{message}</p>

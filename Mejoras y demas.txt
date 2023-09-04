@@ -1,2 +1,4 @@
 agregar demas dispositivos
-arreglar nombres de clases 
+arreglar nombres de clases
+
+poder agregar mas dispositivos manual, modificar el stock manual, añadir stock de demas dispositivos, 
