@@ -3,6 +3,8 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { useParams, useNavigate } from "react-router-dom";
 import { pcContext } from "./Context"; // Importa el contexto
+import moment from "moment-timezone";
+
 
 const EditPage = () => {
     const { id } = useParams();
@@ -33,12 +35,18 @@ const EditPage = () => {
         try {
             const response = await axios.get(`http://localhost:3001/api/cursos/${id}`);
             setCurso(response.data);
-            setEditedCurso(response.data);
+
+            // Formatea la hora de entrega en la zona horaria de Argentina (Buenos Aires)
+            const horaEntregaArgentina = moment(response.data.horaEntrega)
+                .tz("America/Argentina/Buenos_Aires")
+                .format("YYYY-MM-DD HH:mm:ss");
+
+            // Modifica el objeto editedCurso para incluir la hora de entrega formateada
+            setEditedCurso({ ...response.data, horaEntrega: horaEntregaArgentina });
         } catch (error) {
             console.error("Error fetching curso:", error);
         }
     };
-
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
@@ -73,7 +81,7 @@ const EditPage = () => {
             try {
                 await axios.put(`http://localhost:3001/api/cursos/${id}`, editedCurso);
                 setMessage("Curso actualizado correctamente");
-                fetchCurso();
+                fetchCurso(); // Recargar los datos del curso después de la actualización
             } catch (error) {
                 console.error("Error updating curso:", error);
                 setMessage("Hubo un error al actualizar el curso");
@@ -204,6 +212,19 @@ const EditPage = () => {
                                 required
                                 name="cantidad"
                                 value={editedCurso.cantidad}
+                                onChange={handleInputChange}
+                            />
+                        </div>
+
+                        <div className="mb-3">
+                            <label>Hora de Entrega:</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Ingrese la hora de entrega"
+                                required
+                                name="horaEntrega"
+                                value={editedCurso.horaEntrega}
                                 onChange={handleInputChange}
                             />
                         </div>

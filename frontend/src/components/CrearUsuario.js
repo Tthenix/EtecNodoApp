@@ -15,6 +15,7 @@ const CrearUsuario = () => {
     cantidad: 0,
     horaEntrega: "",
     codigo: "",
+    tipoArticulo: [],
   };
 
   const codigoRef = useRef(null);
@@ -38,8 +39,17 @@ const CrearUsuario = () => {
   };
 
   const capturarDatos = (e) => {
-    const { name, value } = e.target;
-    setUsuario({ ...usuario, [name]: value });
+    const { name, value, options } = e.target;
+
+    if (name === "tipoArticulo") {
+      const selectedOptions = Array.from(options)
+        .filter((option) => option.selected)
+        .map((option) => option.value);
+
+      setUsuario({ ...usuario, [name]: selectedOptions });
+    } else {
+      setUsuario({ ...usuario, [name]: value });
+    }
   };
 
   const guardarDatos = async (e) => {
@@ -52,6 +62,7 @@ const CrearUsuario = () => {
       horaRetirada: usuario.horaRetirada,
       horaEntrega: usuario.horaEntrega,
       codigo: usuario.codigo,
+      tipoArticulo: usuario.tipoArticulo,
     };
 
     const newStock = stock - usuario.cantidad;
@@ -88,7 +99,7 @@ const CrearUsuario = () => {
               <input
                 type="text"
                 className="form-control"
-                placeholder="ingresar el nombre del usuario"
+                placeholder="ingrese nombre del registrador"
                 required
                 name="nombre"
                 value={usuario.nombre}
@@ -102,12 +113,29 @@ const CrearUsuario = () => {
               <input
                 type="text"
                 className="form-control"
-                placeholder="ingresar nombre del profesor"
+                placeholder="curso que realiza el retiro"
                 required
                 name="profesor"
                 value={usuario.profesor}
                 onChange={capturarDatos}
               />
+            </div>
+
+            <div className="mb-3">
+              <label>Seleccionar tipo(s) de dispositivos:</label>
+              <select
+                className="form-control"
+                required
+                name="tipoArticulo"
+                multiple // Permitir selecciones múltiples
+                value={usuario.tipoArticulo}
+                onChange={capturarDatos}
+              >
+                <option value="notebook">Notebook</option>
+                <option value="proyecto">Proyector</option>
+                <option value="parlante">Parlante</option>
+                {/* Agrega más opciones según tus necesidades */}
+              </select>
             </div>
 
             <div className="mb-3">
@@ -137,12 +165,12 @@ const CrearUsuario = () => {
             </div>
 
             <div className="mb-3">
-              <label>Codigo de computadora:</label>
+              <label>Codigos:</label>
 
               <textarea
                 ref={codigoRef} // Asignar la referencia al campo
                 className="form-control"
-                placeholder="ingresar codigo de computadora"
+                placeholder="ingresar codigos de dispositivos"
                 required
                 name="codigo"
                 value={usuario.codigo}

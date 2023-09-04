@@ -24,18 +24,23 @@ const Navegacion = () => {
           <div className="collapse navbar-collapse " id="navbarNav">
             <ul className="navbar-nav ms-auto">
               <li className="nav-item">
+                <Link className="nav-link p-4 text-white" to="/guia">
+                  Como usar la NodoApp?
+                </Link>
+              </li>
+              <li className="nav-item">
                 <Link className="nav-link p-4 text-white" to="/">
                   Dashboard
                 </Link>
               </li>
               <li className="nav-item">
                 <Link className="nav-link p-4 text-white" to="/CrearUsuario">
-                  Retiro de computadora
+                  Realizar retiro
                 </Link>
               </li>
             </ul>
           </div>
-          
+
         </div>
       </nav>
     </div>
