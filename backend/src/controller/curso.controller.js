@@ -9,12 +9,12 @@ cursoCtrl.getCurso = async (req, res) => {
 };
 
 cursoCtrl.createCurso = async (req, res) => {
-    const { nombre, profesor, cantidad, horaEntrega, codigo } = req.body;
+    const { nombre, profesor, cantidad, horaEntrega, codigo, tipoArticulo } = req.body;
 
     // Obtener la hora actual en la zona horaria de Argentina
     const horaRetirada = moment().tz("America/Argentina/Buenos_Aires").format();
 
-    const newCurso = new Curso({ nombre, profesor, horaRetirada, cantidad, horaEntrega, codigo });
+    const newCurso = new Curso({ nombre, profesor, horaRetirada, cantidad, horaEntrega, codigo, tipoArticulo });
     await newCurso.save();
     res.json({ message: "El curso ha sido añadido" });
 };
@@ -38,6 +38,7 @@ cursoCtrl.updateCurso = async (req, res) => {
         cantidad,
         horaEntrega,
         codigo,
+        tipoArticulo: [String],
     });
     res.json({ message: "El curso fue actualizado" });
 };

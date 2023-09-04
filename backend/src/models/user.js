@@ -10,6 +10,7 @@ const cursoSchema = new Schema({
     cantidad: Number,
     horaEntrega: Date,
     codigo: String,
+    tipoArticulo: [String],
 },
     {
         timestamps: true
