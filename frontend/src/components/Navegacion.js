@@ -34,6 +34,11 @@ const Navegacion = () => {
                 </Link>
               </li>
               <li className="nav-item">
+                <Link className="nav-link p-4 text-white" to="/login">
+                  Login
+                </Link>
+              </li>
+              <li className="nav-item">
                 <Link className="nav-link p-4 text-white" to="/CrearUsuario">
                   Realizar retiro
                 </Link>

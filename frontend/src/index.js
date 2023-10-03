@@ -10,6 +10,7 @@ import Contador from "./components/Contador"
 import StockTotal from "./components/StockTotal";
 import EditPage from './components/EditPage';
 import Guia from './components/Guia.js';
+import Login from './components/Login';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -24,6 +25,7 @@ root.render(
           <Route path="/stockTotal" element={<StockTotal />} />
           <Route path="/editpage/:id" element={<EditPage />} />
           <Route path="/guia" element={<Guia />} />
+          <Route path='/login' element={<Login/>}/>
         </Routes>
         <Footer />
       </React.StrictMode>

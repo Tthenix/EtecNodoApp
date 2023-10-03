@@ -1,9 +1,11 @@
-const { Schema, model } = require("mongoose")
+import mongoose from "mongoose";
+import moment from "moment-timezone";
 
-const moment = require("moment-timezone");
 moment.tz.setDefault("America/Argentina/Buenos_Aires");
 
-const cursoSchema = new Schema({
+const courseCollection = "Curso";
+
+const courseSchema = new mongoose.Schema({
     nombre: String,
     profesor: String,
     horaRetirada: Date,
@@ -16,4 +18,4 @@ const cursoSchema = new Schema({
         timestamps: true
     })
 
-module.exports = model("Curso", cursoSchema)
+export const courseModel = mongoose.model(courseCollection, courseSchema)

@@ -20,6 +20,11 @@ export const usePcContext = () => { return (useContext(pcContext))}
 const PcProvider = ({children}) => {
 
     const [stock, setStock] = useState(120)
+    const [user, setUser] = useState([]);
+
+    const getUser = (user) => {
+        setUser(user)
+    }
     
 
     const updateStock = (newStock) => {
@@ -43,7 +48,7 @@ const PcProvider = ({children}) => {
     }
 
     return(
-        <pcContext.Provider value={{stock, updateStock, findIdStock}}>
+        <pcContext.Provider value={{stock, updateStock, findIdStock, getUser, user}}>
             {children}
         </pcContext.Provider>
     )
