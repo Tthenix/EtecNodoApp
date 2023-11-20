@@ -4,7 +4,9 @@
 import Swal from "sweetalert2";
 // ! useContext (usar el contexto creado), createContext (Crear el contexto de la aplicacion) => React
 
-import { useContext, createContext, useState } from "react";
+import { useContext, createContext, useState, useEffect } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 //! 1° Crear el contexto - Valor dentro del argumento de la funcion es el valor por default del contexto
 //! 2° Exportar el contexto creado
@@ -18,20 +20,33 @@ export const usePcContext = () => { return (useContext(pcContext))}
 
 
 const PcProvider = ({children}) => {
-
-    const [stock, setStock] = useState(120)
-    const [user, setUser] = useState([]);
-
-    const getUser = (user) => {
-        setUser(user)
-    }
     
+    const navigate = useNavigate()
+    const [stock, setStock] = useState(120)
+    const [user, setUser] = useState(null);
 
+    useEffect(() => {
+        if(!user){
+            axios.get("/api/users/getUser").then((data) => {
+                console.log(data);
+                if(!data.data.valid)
+                {
+                if(window.location.pathname !== "/register")
+                    navigate("/login");
+
+                setUser(null);
+                }
+                else
+                {
+                    setUser(data.data.payload)
+                }
+            })
+        }
+    },[])
+    
     const updateStock = (newStock) => {
         setStock(newStock);
     }
-        
-
 
     const findIdStock = (data, id) => {
         const listaEncontrada = data.find(element => element._id === id);
@@ -48,7 +63,7 @@ const PcProvider = ({children}) => {
     }
 
     return(
-        <pcContext.Provider value={{stock, updateStock, findIdStock, getUser, user}}>
+        <pcContext.Provider value={{stock, updateStock, findIdStock, user, setUser}}>
             {children}
         </pcContext.Provider>
     )

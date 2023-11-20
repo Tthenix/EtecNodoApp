@@ -4,10 +4,8 @@ import Contador from "./Contador";
 import { usePcContext } from "./Context";
 import { Link, useNavigate } from "react-router-dom";
 import moment from "moment-timezone";
-import User from "./User";
 
 const ListaUsuario = () => {
-  const navigate = useNavigate();
   const [lista, setLista] = useState([]);
   const { findIdStock, stock, updateStock, user } = usePcContext();
   const [codigosVisible, setCodigosVisible] = useState({});
@@ -22,16 +20,7 @@ const ListaUsuario = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if(user._id === undefined){
-        console.log("No está logueado");
-        return navigate("/login");
-      } 
-      const getUser = await axios.get("http://localhost:3001/api/users/" + user._id)
-      if(!getUser.data.loggedIn){
-        console.log("No está logueado");
-        return navigate("/login");
-      }
-      const res = await axios.get("http://localhost:3001/api/cursos");
+      const res = await axios.get("/api/cursos");
       const cursosData = res.data.payload.cursos.map((curso) => {
         const horaRetiradaArgentina = moment(curso.horaRetirada).tz("America/Argentina/Buenos_Aires").format("YYYY-MM-DD HH:mm:ss");
         const updatedAtArgentina = moment(curso.updatedAt).tz("America/Argentina/Buenos_Aires").format("YYYY-MM-DD HH:mm:ss");
@@ -62,10 +51,10 @@ const ListaUsuario = () => {
   }, [stock]);
 
   const eliminarCurso = async (id) => {
-    await axios.delete("http://localhost:3001/api/cursos/" + id);
+    await axios.delete("/api/cursos/" + id);
     findIdStock(lista, id);
 
-    const res = await axios.get("http://localhost:3001/api/cursos");
+    const res = await axios.get("/api/cursos");
     const cursosData = res.data.map((curso) => {
       // Formatea la hora de retirada a la zona horaria de Argentina (Buenos Aires)
       const horaRetiradaArgentina = moment(curso.horaRetirada).tz("America/Argentina/Buenos_Aires").format("YYYY-MM-DD HH:mm:ss");
@@ -177,7 +166,6 @@ const ListaUsuario = () => {
         </div>
         <div className="col-12 col-md-2">
           <Contador onAdd={onAdd} initial={1} />
-          <User user={user}/>
         </div>
       </div>
     </div>

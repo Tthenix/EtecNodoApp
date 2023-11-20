@@ -5,27 +5,27 @@ class LoginController{
     return res.status(200).json({
       status: "success",
       message: "Register realizado con exito",
-      payload: "/"
+      valid: true
     })
   }
 
   async getLogin(req, res){
-    const {id } = req.params
-    console.log(id);
-    const foundUser = await userModel.findById(id);
-    console.log(foundUser);
-    req.session.user = foundUser
-    if(req.session.user){
-      
-      return res.send({
-        loggedIn: true,
-        user: req.session.user
-      });
-    }else {
-      return res.send({
-        loggedIn: false
-      });
+    if(!req.session.user)
+    {
+      // hacer logger
+      return res.json({
+        status: "error",
+        message: "not logged in",
+        valid: false
+      })
     }
+    // hacer logger
+    return res.status(200).json({
+      status: "success",
+      message: "already logged in",
+      payload: req.session.user,
+      valid: true
+    })
   }
 
   login(req, res) {
@@ -51,6 +51,21 @@ class LoginController{
     return res.send(req.session.user)
   }
 
+  failRegister(req, res){
+    return res.json({
+      status: "error",
+      message: "hubo un error a la hora de registrarte",
+      valid: false
+    })
+  }
+
+  failLogin(req, res){
+    return res.json({
+      status: "error",
+      message: "hubo un error a la hora de loguearte",
+      valid: false
+    })
+  }
 }
 
 export const loginController = new LoginController()

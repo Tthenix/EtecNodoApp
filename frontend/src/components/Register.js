@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {Form, FormGroup, Label, Input, Button} from "reactstrap"
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -6,9 +6,9 @@ import "./index.css";
 import { usePcContext } from "./Context";
 import Swal from "sweetalert2";
 
-const Login = () => {
+const Register = () => {
   const navigate = useNavigate();
-  const {user, setUser} = usePcContext()
+  const { setUser} = usePcContext()
 
   const ValorInicial = {
     email: "",
@@ -17,15 +17,18 @@ const Login = () => {
 
   const [usuario, setUsuario] = useState(ValorInicial);
   
-  const checkLogin = async (e) => {
+  const Register = async (e) => {
     e.preventDefault();
     const newUser = {
       email: usuario.email,
       password: usuario.password
     };
-    const response = await axios.post("/api/users/login", newUser);
+    const response = await axios.post("/api/users/register", newUser);
     if(response.data.valid){
-      console.log(response);
+      Swal.fire({
+        text: "Usuario registrado con éxito!",
+        icon: "success"
+      })
       setUsuario({ ...ValorInicial });
       setUser(response.data.user)
       return navigate("/")
@@ -35,7 +38,6 @@ const Login = () => {
         icon: "error"
       })
     }
-
   };
 
   const capturarDatos = (e) => {
@@ -48,8 +50,8 @@ const Login = () => {
     <div className="Crear flexContainer">
       <div className="col-md-10 listas offset-md-3 align-center formCard">
         <div className="card card-body">
-          <h1 className="">Login</h1>
-          <Form onSubmit={checkLogin}>
+          <h1 className="">Register</h1>
+          <Form onSubmit={Register}>
             <FormGroup>
               <Label
                 for="exampleEmail"
@@ -94,4 +96,4 @@ const Login = () => {
   )
 }
 
-export default Login;
+export default Register;

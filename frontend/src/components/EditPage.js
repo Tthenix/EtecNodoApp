@@ -32,7 +32,7 @@ const EditPage = () => {
 
     const fetchCurso = async () => {
         try {
-            const response = await axios.get(`http://localhost:3001/api/cursos/${id}`);
+            const response = await axios.get(`/api/cursos/${id}`);
             setCurso(response.data);
 
             // Formatea la hora de entrega en la zona horaria de Argentina (Buenos Aires)

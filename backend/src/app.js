@@ -14,7 +14,10 @@ const app = express()
 
 // * Middlewares
 
-app.use(cors());
+app.use(cors({
+    origin: "http://localhost:4000", // Reemplaza con tu origen
+    credentials: true,
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -25,8 +28,8 @@ connectMongo();
 
 // * Passport 
 app.use(session({
-    store: MongoStore.create({ mongoUrl: "mongodb+srv://TtheNix:svkDzJPi7tjGcmyx@cluster0.yeuy3ea.mongodb.net/", ttl: 30 * 60}),
-    secret: 'secretNODO',
+    store: MongoStore.create({ mongoUrl: mongourl, ttl: 30 * 60}),
+    secret: 'secret',
     resave: false,
     saveUninitialized: true,
     cookie:{
@@ -42,9 +45,6 @@ app.use(passport.session());
 
 app.use("/api/cursos", courseRouter);
 app.use("/api/users", loginRouter);
-app.use("/login", (req, res) => {
-    return res.render("login-form")
-})
 
 app.listen(port || 3001, () => {
     console.log("Server escuchando en el puerto ", port)
